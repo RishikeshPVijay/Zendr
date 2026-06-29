@@ -7,7 +7,7 @@
     "dev": "pnpm --parallel --filter @zendr/server --filter @zendr/web dev",
     "dev:server": "pnpm --filter @zendr/server dev",
     "dev:web": "pnpm --filter @zendr/web dev",
-    "build": "pnpm -r build",
+    "build": "pnpm --filter @zendr/web build && pnpm --filter @zendr/server build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
