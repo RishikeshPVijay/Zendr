@@ -1,0 +1,46 @@
+name: Task
+description: Create a roadmap or implementation task
+title: '[Task]: '
+labels:
+  - task
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for roadmap and implementation tasks
+
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: Describe the purpose of this task
+    validations:
+      required: true
+
+  - type: textarea
+    id: tasks
+    attributes:
+      label: Tasks
+      description: List the work that needs to be completed
+      value: |
+        - [ ]
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: Define what must be true for this task to be considered complete
+      value: |
+        - [ ]
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Add any additional notes
+      placeholder: |
+        This issue...
