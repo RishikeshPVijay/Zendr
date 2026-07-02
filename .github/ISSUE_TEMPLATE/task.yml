@@ -41,6 +41,6 @@ body:
     id: notes
     attributes:
       label: Notes
-      desription: Add any additional notes
+      description: Add any additional notes
       placeholder: |
         This issue...
