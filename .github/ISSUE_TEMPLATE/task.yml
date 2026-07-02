@@ -24,8 +24,8 @@ body:
       description: List the work that needs to be completed.
       value: |
         - [ ]
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: textarea
     id: acceptance
@@ -34,8 +34,8 @@ body:
       description: Define what must be true for this task to be considered complete.
       value: |
         - [ ]
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: textarea
     id: notes
