@@ -12,7 +12,7 @@ export const SectionWrapper: React.FC<React.PropsWithChildren<SectionWrapperProp
 }) => {
   return (
     <section className={cn('w-full', sectionClassName)}>
-      <div className={cn('max-w-360 mx-auto', className)}>{children}</div>
+      <div className={cn('mx-auto max-w-360', className)}>{children}</div>
     </section>
   );
 };

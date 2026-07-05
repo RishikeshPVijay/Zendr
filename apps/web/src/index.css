@@ -12,14 +12,14 @@
 
 :root {
   /* Brand */
-  --primary: #7c6cff;
-  --primary-hover: #6858f6;
+  --primary: #6858f6;
+  --primary-hover: #7c6cff;
   --primary-active: #4a35e0;
   --secondary: #f3f4f6;
 
   /* Layouts */
   --background: #f8fafc;
-  --header: #0b0f19;
+  --header: #ffffff;
 
   /* Surfaces */
   --surface-primary: #ffffff;
@@ -53,15 +53,12 @@
 
   /* Focus & Effects */
   --focus-ring: #a78bfa;
-  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.05);
-  --shadow-md: 0 8px 24px rgb(15 23 42 / 0.08);
-  --shadow-lg: 0 16px 48px rgb(15 23 42 / 0.12);
 }
 
 [data-theme='dark'] {
   /* Brand */
-  --primary: #7c6cff;
-  --primary-hover: #9d8cff;
+  --primary: #6858f6;
+  --primary-hover: #7c6cff;
   --primary-active: #5b4cff;
   --secondary: #232433;
 
@@ -70,9 +67,9 @@
   --header: #0b0f19;
 
   /* Surfaces */
-  --surface-primary: #111827;
+  --surface-primary: #1f2937;
   --surface-secondary: #171f2e;
-  --surface-tertiary: #1f2937;
+  --surface-tertiary: #111827;
   --surface-hover: #263246;
 
   /* Text */
@@ -101,16 +98,13 @@
 
   /* Focus & Effects */
   --focus-ring: #9d8cff;
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.25);
-  --shadow-md: 0 8px 24px rgb(0 0 0 / 0.35);
-  --shadow-lg: 0 16px 48px rgb(0 0 0 / 0.45);
 }
 
 @theme {
   /* Brand */
   --color-primary: var(--primary);
-  --color-hover: var(--hover);
-  --color-active: var(--active);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
   --color-secondary: var(--secondary);
 
   /* Text */
@@ -118,6 +112,7 @@
   --color-text-secondary: var(--text-secondary);
   --color-text-tertiary: var(--text-tertiary);
   --color-text-inverse: var(--text-inverse);
+  --color-text-disabled: var(--text-disabled);
 
   /* Layouts */
   --color-background: var(--background);
@@ -148,10 +143,6 @@
 
   /*color- Focus & Effects */
   --color-focus-ring: var(--focus-ring);
-  --color-shadow-sm: var(--shadow-sm);
-  --color-shadow-md: var(--shadow-md);
-  --color-shadow-lg: var(--shadow-lg);
-
   --shadow-header: 0 2px 2px -1px var(--border-hover);
 
   /* Typography */
@@ -168,6 +159,10 @@
   --text-h3: 16px;
   --text-h3--line-height: 24px;
   --text-h3--font-weight: 600;
+
+  --text-action: 16px;
+  --text-action--line-height: 24px;
+  --text-action--font-weight: 600;
 
   --text-body-large: 16px;
   --text-body-large--line-height: 24px;
