@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 :root {
   /* Brand */
   --primary: #7c6cff;
@@ -7,8 +9,11 @@
   --primary-active: #4a35e0;
   --secondary: #f3f4f6;
 
-  /* Backgrounds */
+  /* Layouts */
   --background: #f8fafc;
+  --header: #0b0f19;
+
+  /* Surfaces */
   --surface-primary: #ffffff;
   --surface-secondary: #f5f7fb;
   --surface-tertiary: #eef2f8;
@@ -52,8 +57,11 @@
   --primary-active: #5b4cff;
   --secondary: #232433;
 
-  /* Backgrounds */
-  --background: #0b0f19;
+  /* Layouts */
+  --background: #0f172a;
+  --header: #0b0f19;
+
+  /* Surfaces */
   --surface-primary: #111827;
   --surface-secondary: #171f2e;
   --surface-tertiary: #1f2937;
@@ -101,13 +109,22 @@
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-text-tertiary: var(--text-tertiary);
+  --color-text-inverse: var(--text-inverse);
 
-  /* Backgrounds */
+  /* Layouts */
   --color-background: var(--background);
+  --color-header: var(--header);
+
+  /* Surfaces */
   --color-surface-primary: var(--surface-primary);
   --color-surface-secondary: var(--surface-secondary);
   --color-surface-tertiary: var(--surface-tertiary);
   --color-surface-hover: var(--surface-hover);
+
+  /* Borders */
+  --color-border: var(--border);
+  --color-border-hover: var(--border-hover);
+  --color-divider: var(--divider);
 
   /* Status */
   --color-success: var(--success);
@@ -126,6 +143,15 @@
   --color-shadow-sm: var(--shadow-sm);
   --color-shadow-md: var(--shadow-md);
   --color-shadow-lg: var(--shadow-lg);
+
+  --shadow-header: 0 2px 2px -1px var(--border-hover);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
 }
 
 body {
