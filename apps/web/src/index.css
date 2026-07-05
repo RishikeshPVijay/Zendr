@@ -1,5 +1,13 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'Inter';
+  src: url('./assets/fonts/InterVariable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 :root {
@@ -145,6 +153,37 @@
   --color-shadow-lg: var(--shadow-lg);
 
   --shadow-header: 0 2px 2px -1px var(--border-hover);
+
+  /* Typography */
+  --font-inter: 'Inter', sans-serif;
+
+  --text-h1: 28px;
+  --text-h1--line-height: 36px;
+  --text-h1--font-weight: 600;
+
+  --text-h2: 20px;
+  --text-h2--line-height: 28px;
+  --text-h2--font-weight: 600;
+
+  --text-h3: 16px;
+  --text-h3--line-height: 24px;
+  --text-h3--font-weight: 600;
+
+  --text-body-large: 16px;
+  --text-body-large--line-height: 24px;
+  --text-body-large--font-weight: 400;
+
+  --text-body: 14px;
+  --text-body--line-height: 20px;
+  --text-body--font-weight: 400;
+
+  --text-body-small: 12px;
+  --text-body-small--line-height: 18px;
+  --text-body-small--font-weight: 400;
+
+  --text-caption: 11px;
+  --text-caption--line-height: 16px;
+  --text-caption--font-weight: 400;
 }
 
 html,
@@ -156,4 +195,5 @@ body,
 
 body {
   background-color: var(--background);
+  font-family: var(--font-inter);
 }
