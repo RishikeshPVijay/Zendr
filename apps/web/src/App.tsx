@@ -8,9 +8,9 @@ export function App() {
       <div className="flex flex-col h-full">
         <Header />
         <SectionWrapper sectionClassName="flex flex-1" className="flex-1 p-5 flex">
-          <h2 className="flex-1 text-text-primary">Discover Devices</h2>
+          <h1 className="flex-1 text-h1 text-text-primary">Discover Devices</h1>
           <div className="bg-border-hover w-px" />
-          <h3 className="flex-1 text-text-primary">Transfers</h3>
+          <h2 className="flex-1 text-h2 text-text-primary">Transfers</h2>
         </SectionWrapper>
       </div>
     </ThemeProvider>

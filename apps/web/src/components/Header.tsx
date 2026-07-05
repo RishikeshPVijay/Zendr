@@ -5,7 +5,7 @@ export const Header = () => {
   return (
     <SectionWrapper sectionClassName="bg-header shadow-header">
       <aside className="p-5 flex justify-between">
-        <h1 className="text-text-inverse dark:text-text-primary">Logo</h1>
+        <span className="text-text-inverse dark:text-text-primary">Logo</span>
         <ThemeButton />
       </aside>
     </SectionWrapper>
