@@ -255,6 +255,9 @@ importers:
 
   apps/server:
     dependencies:
+      '@zendr/protocol':
+        specifier: workspace:*
+        version: link:../../packages/protocol
       express:
         specifier: ^5.2.1
         version: 5.2.1

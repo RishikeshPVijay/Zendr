@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@zendr/protocol": "workspace:*",
     "express": "^5.2.1",
     "pino": "^10.3.1",
     "pino-http": "^11.0.0"
