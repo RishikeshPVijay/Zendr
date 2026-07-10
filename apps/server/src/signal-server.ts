@@ -1,4 +1,4 @@
-import express, { type Express } from 'express';
+import express from 'express';
 import http from 'node:http';
 import { logger } from './logger.js';
 
@@ -7,13 +7,10 @@ export interface SignalServerConfig {
 }
 
 export class SignalServer {
-  readonly app: Express;
-  readonly httpServer: http.Server;
+  readonly app = express();
+  readonly httpServer = http.createServer(this.app);
 
-  constructor(readonly config: SignalServerConfig) {
-    this.app = express();
-    this.httpServer = http.createServer(this.app);
-  }
+  constructor(private readonly config: SignalServerConfig) {}
 
   async start(): Promise<void> {
     if (this.httpServer.listening) {
@@ -25,8 +22,6 @@ export class SignalServer {
       this.httpServer.listen(this.config.port, () => {
         this.httpServer.off('error', reject);
 
-        logger.info({ port: this.config.port }, 'Signal server started');
-
         resolve();
       });
     });
@@ -37,7 +32,7 @@ export class SignalServer {
       return;
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.httpServer.close((error) => {
         if (error) {
           reject(error);
