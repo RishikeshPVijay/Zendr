@@ -1,8 +1,11 @@
 import { appConfig } from './config.js';
 import { logger } from './logger.js';
+import { MessageRouter } from './messaging/message-router.js';
 import { registerMiddleware } from './middleware.js';
 import { registerRoutes } from './routes/index.js';
 import { SignalServer } from './signal-server.js';
+import { SignalWebSocketServer } from './signal-websocket-server.js';
+import { WebSocketSessionRegistry } from './websocket/websocket-session-registry.js';
 
 async function main(): Promise<void> {
   const signalServer = new SignalServer({ port: appConfig.port });
@@ -10,8 +13,19 @@ async function main(): Promise<void> {
   registerMiddleware(signalServer.app);
   registerRoutes(signalServer.app);
 
+  const sessionRegistry = new WebSocketSessionRegistry();
+  const messageRouter = new MessageRouter([]);
+
+  const signalWebSocketServer = new SignalWebSocketServer(
+    signalServer.httpServer,
+    sessionRegistry,
+    messageRouter,
+    [],
+  );
+
   try {
     await signalServer.start();
+    logger.info({ port: appConfig.port, transports: ['websocket'] }, 'Signal server started');
   } catch (err) {
     logger.fatal({ err }, 'Failed to start signal server');
     process.exitCode = 1;
@@ -28,6 +42,12 @@ async function main(): Promise<void> {
     isShuttingDown = true;
 
     logger.info({ signal }, 'Shutting down');
+
+    try {
+      await signalWebSocketServer.stop();
+    } catch (err) {
+      logger.error({ err }, 'Failed to stop web socket server');
+    }
 
     try {
       await signalServer.stop();
