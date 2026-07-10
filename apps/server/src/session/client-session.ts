@@ -1,4 +1,4 @@
-import { BaseMessage } from '@zendr/protocol';
+import type { BaseMessage } from '@zendr/protocol';
 
 export interface ClientSession {
   readonly id: string;

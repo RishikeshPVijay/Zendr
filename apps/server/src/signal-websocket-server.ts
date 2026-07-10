@@ -69,7 +69,7 @@ export class SignalWebSocketServer {
           return;
         }
 
-        logger.info('Websocket server stopped');
+        logger.info('Websocket transport closed');
         resolve();
       });
 
