@@ -1,7 +1,9 @@
 import { appConfig } from './config.js';
+import { DiscoveryHandler } from './discovery/discovery-handler.js';
 import { logger } from './logger.js';
 import { MessageRouter } from './messaging/message-router.js';
 import { registerMiddleware } from './middleware.js';
+import { PeerRegistry } from './peer/peer-registry.js';
 import { registerRoutes } from './routes/index.js';
 import { SignalServer } from './signal-server.js';
 import { SignalWebSocketServer } from './signal-websocket-server.js';
@@ -14,13 +16,15 @@ async function main(): Promise<void> {
   registerRoutes(signalServer.app);
 
   const sessionRegistry = new WebSocketSessionRegistry();
-  const messageRouter = new MessageRouter([]);
+  const peerRegistry = new PeerRegistry();
+  const discoveryHandler = new DiscoveryHandler(peerRegistry);
+  const messageRouter = new MessageRouter([discoveryHandler]);
 
   const signalWebSocketServer = new SignalWebSocketServer(
     signalServer.httpServer,
     sessionRegistry,
     messageRouter,
-    [],
+    [discoveryHandler],
   );
 
   try {
