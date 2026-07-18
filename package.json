@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "pnpm --parallel --filter @zendr/server... --filter @zendr/web dev",
+    "dev": "pnpm --parallel --filter @zendr/server... --filter @zendr/web dev --host",
     "dev:server": "pnpm --parallel --filter @zendr/server... dev",
     "dev:web": "pnpm --filter @zendr/web dev",
     "build": "pnpm --filter @zendr/web build && pnpm --filter @zendr/server... build",

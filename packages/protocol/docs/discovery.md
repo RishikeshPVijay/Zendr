@@ -41,7 +41,7 @@ Registers a client with the signaling server.
   type: "discovery:register",
   id: string;
   name: string;
-  deviceType: "mobile" | "tablet" | "desktop" | "tv" | "unknown";
+  deviceType: "mobile" | "tablet" | "desktop" | "tv";
 }
 ```
 
@@ -63,7 +63,7 @@ Sent to a newly registered client the complete list of peers currently connected
   peers: {
     id: string;
     name: string;
-    deviceType: 'mobile' | 'tablet' | 'desktop' | 'tv' | 'unknown';
+    deviceType: 'mobile' | 'tablet' | 'desktop' | 'tv';
   }
   [];
 }
@@ -87,7 +87,7 @@ Notifies clients that a new peer has joined the signaling server and should be a
   peers: {
     id: string;
     name: string;
-    deviceType: 'mobile' | 'tablet' | 'desktop' | 'tv' | 'unknown';
+    deviceType: 'mobile' | 'tablet' | 'desktop' | 'tv';
   }
 }
 ```

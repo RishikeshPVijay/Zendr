@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useSyncExternalStore } from 'react';
+import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
 type Value = string | number | object | null;
 
@@ -52,10 +52,19 @@ export const useLocalStorage = <V extends Value>(
   key: string,
   initialValue: V,
 ): [V, (value: SetValueAction<V>) => void] => {
-  const getSnapshot = () => getItem(key);
+  const getSnapshot = () => {
+    let value = getItem(key);
+
+    if (value === null && initialValue !== null) {
+      value = normalizeValue(initialValue);
+      setItem(key, value);
+    }
+
+    return value;
+  };
   const normalizedValue = useSyncExternalStore(subscribe, getSnapshot);
 
-  const value = denormalizeValue<V>(normalizedValue);
+  const value = useMemo(() => denormalizeValue<V>(normalizedValue), [normalizedValue]);
 
   const setValue = useCallback(
     (setValueAction: SetValueAction<V>) => {
@@ -73,12 +82,6 @@ export const useLocalStorage = <V extends Value>(
     },
     [key],
   );
-
-  useEffect(() => {
-    if (initialValue !== null) {
-      setItem(key, normalizeValue(initialValue));
-    }
-  }, [key, initialValue]);
 
   return [value, setValue];
 };
