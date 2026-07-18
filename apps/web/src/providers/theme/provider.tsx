@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocalStorage } from '../../hooks';
-import type { Theme } from '../../types/app';
+import { isTheme, type Theme } from '../../theme';
 import { ThemeContext } from './context';
 
 const getNextTheme = (theme: Theme | null) => {
@@ -32,6 +32,11 @@ export const ThemeProvider: React.FC<React.PropsWithChildren> = ({ children }) =
   const [theme, setTheme] = useLocalStorage<Theme | null>('theme', null);
 
   useEffect(() => {
+    if (theme !== null && !isTheme(theme)) {
+      setTheme(null);
+      return;
+    }
+
     const handler = () => {
       applyTheme(theme ?? 'system');
     };
@@ -39,10 +44,11 @@ export const ThemeProvider: React.FC<React.PropsWithChildren> = ({ children }) =
     mediaQuery.addEventListener('change', handler);
 
     handler();
+
     return () => {
       mediaQuery.removeEventListener('change', handler);
     };
-  }, [theme]);
+  }, [theme, setTheme]);
 
   const toggleTheme = () => {
     setTheme((prevTheme) => {

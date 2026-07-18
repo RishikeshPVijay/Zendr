@@ -54,13 +54,15 @@ export class DiscoveryHandler implements MessageHandler, DisconnectHandler {
   }
 
   private registerPeer(session: ClientSession, registerMessage: RegisterMessage): void {
-    const { id, name, deviceType } = registerMessage;
+    const { id, name, deviceType, os, browser } = registerMessage;
 
     const newPeerConnection: PeerConnection = {
       peer: {
         id,
         deviceType,
         name,
+        browser,
+        os,
       },
       session,
     };
@@ -76,7 +78,7 @@ export class DiscoveryHandler implements MessageHandler, DisconnectHandler {
 
     const listMessage: InitialPeerListMessage = {
       type: 'discovery:list',
-      peers: peerConnections.map(({ peer }) => peer),
+      peers: peerConnections.map(({ peer }) => peer).filter((peer) => peer.id !== id),
     };
 
     session.send(listMessage);

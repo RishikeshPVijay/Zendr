@@ -19,7 +19,7 @@ export class MessageRouter {
       throw new ProtocolError('Invalid JSON', { cause: err });
     }
 
-    const parseResult = BaseMessageSchema.safeParse(json);
+    const parseResult = BaseMessageSchema.loose().safeParse(json);
 
     if (!parseResult.success) {
       throw new ProtocolError('Invalid message');
