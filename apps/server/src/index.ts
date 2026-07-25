@@ -7,6 +7,7 @@ import { PeerRegistry } from './peer/peer-registry.js';
 import { registerRoutes } from './routes/index.js';
 import { SignalServer } from './signal-server.js';
 import { SignalWebSocketServer } from './signal-websocket-server.js';
+import { SignalingHandler } from './signaling/signaling-handler.js';
 import { WebSocketSessionRegistry } from './websocket/websocket-session-registry.js';
 
 async function main(): Promise<void> {
@@ -18,7 +19,8 @@ async function main(): Promise<void> {
   const sessionRegistry = new WebSocketSessionRegistry();
   const peerRegistry = new PeerRegistry();
   const discoveryHandler = new DiscoveryHandler(peerRegistry);
-  const messageRouter = new MessageRouter([discoveryHandler]);
+  const signalingHandler = new SignalingHandler(peerRegistry);
+  const messageRouter = new MessageRouter([discoveryHandler, signalingHandler]);
 
   const signalWebSocketServer = new SignalWebSocketServer(
     signalServer.httpServer,
