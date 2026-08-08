@@ -7,15 +7,20 @@ interface CardProps extends React.ComponentProps<'div'> {
 export const Card: React.FC<React.PropsWithChildren<CardProps>> = ({
   children,
   variant = 'primary',
+  className,
   ...restProps
 }) => {
-  const className = cn('border-border rounded-md border p-6', {
-    'bg-surface-primary': variant === 'primary',
-    'bg-surface-tertiary': variant === 'secondary',
-  });
+  const _className = cn(
+    'border-border rounded-md border p-6',
+    {
+      'bg-surface-primary': variant === 'primary',
+      'bg-surface-tertiary': variant === 'secondary',
+    },
+    className,
+  );
 
   return (
-    <div className={className} {...restProps}>
+    <div className={_className} {...restProps}>
       {children}
     </div>
   );

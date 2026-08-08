@@ -26,6 +26,16 @@ export class PeerRegistry {
     return this.connectionsByPeerId.get(id);
   }
 
+  getBySessionId(sessionId: ClientSessionId): PeerConnection | undefined {
+    const peerId = this.peerIdBySessionId.get(sessionId);
+
+    if (!peerId) {
+      return;
+    }
+
+    return this.getByPeerId(peerId);
+  }
+
   removeByPeerId(id: PeerId): PeerConnection | undefined {
     const peerConnection = this.getByPeerId(id);
 
