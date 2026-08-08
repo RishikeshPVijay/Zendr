@@ -100,7 +100,6 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({ device, hideButton = fal
               className="flex items-center gap-2"
               onClick={() => {
                 if (connectionState === 'connected') {
-                  console.log('calling disconnect');
                   disconnect(id);
                 } else {
                   connect(id);
