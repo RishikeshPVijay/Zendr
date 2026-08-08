@@ -1,12 +1,23 @@
 import { z } from 'zod';
-import { AnswerMessageSchema } from './answer.js';
-import { IceCandidateMessageSchema } from './ice-candidate.js';
-import { OfferMessageSchema } from './offer.js';
+import { ClientAnswerMessageSchema, ForwardedAnswerMessageSchema } from './answer.js';
+import {
+  ClientIceCandidateMessageSchema,
+  ForwardedIceCandidateMessageSchema,
+} from './ice-candidate.js';
+import { ClientOfferMessageSchema, ForwardedOfferMessageSchema } from './offer.js';
 
-export const SignalingMessageSchema = z.discriminatedUnion('type', [
-  OfferMessageSchema,
-  AnswerMessageSchema,
-  IceCandidateMessageSchema,
+export const ClientSignalingMessageSchema = z.discriminatedUnion('type', [
+  ClientOfferMessageSchema,
+  ClientAnswerMessageSchema,
+  ClientIceCandidateMessageSchema,
 ]);
 
-export type SignalingMessage = z.infer<typeof SignalingMessageSchema>;
+export const ForwardedSignalingMessageSchema = z.discriminatedUnion('type', [
+  ForwardedOfferMessageSchema,
+  ForwardedAnswerMessageSchema,
+  ForwardedIceCandidateMessageSchema,
+]);
+
+export type ClientSignalingMessage = z.infer<typeof ClientSignalingMessageSchema>;
+
+export type ForwardedSignalingMessage = z.infer<typeof ForwardedSignalingMessageSchema>;

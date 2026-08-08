@@ -20,8 +20,8 @@ Initiating Client              Signaling Server               Target Client
        │── signaling:ice-candidate ───► │                             │
        │                                ├── signaling:ice-candidate ─►│
        │                                │                             │
-       │◄── signaling:ice-candidate ────┤                             │
        │                                │◄── signaling:ice-candidate ─│
+       │◄── signaling:ice-candidate ────┤                             │
 ```
 
 ## Messages
