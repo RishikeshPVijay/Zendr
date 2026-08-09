@@ -1,16 +1,17 @@
 import type { Peer } from '@zendr/protocol';
 import type { IconType } from 'react-icons';
+import { CgSpinner } from 'react-icons/cg';
 import { FaDesktop, FaMobileAlt, FaTabletAlt, FaWifi } from 'react-icons/fa';
-import { GoUnlink } from 'react-icons/go';
+import { IoIosCheckmarkCircle } from 'react-icons/io';
 import { LuTv } from 'react-icons/lu';
+import { PiWarningCircleFill } from 'react-icons/pi';
 import { usePeerConnection, usePeerConnectionState } from '../providers/peer-connection/context';
 import { cn } from '../utils';
-import { Button } from './Button';
 import { Card } from './Card';
 
 interface DeviceCardProps {
   device: Peer;
-  hideButton?: boolean;
+  pairable?: boolean;
 }
 
 const deviceIconMap: Record<Peer['deviceType'], IconType> = {
@@ -26,7 +27,7 @@ const CONNECTION_STATE_TO_DISPLAY_TEXT: Partial<Record<RTCPeerConnectionState, s
   failed: 'Failed to connect',
 };
 
-export const DeviceCard: React.FC<DeviceCardProps> = ({ device, hideButton = false }) => {
+export const DeviceCard: React.FC<DeviceCardProps> = ({ device, pairable = true }) => {
   const { connect, disconnect } = usePeerConnection();
   const { name, deviceType, browser, os, id } = device;
   const connectionState = usePeerConnectionState(id);
@@ -48,69 +49,74 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({ device, hideButton = fal
     },
   );
 
-  let btnText = 'Connect';
-  switch (connectionState) {
-    case 'connected':
-      btnText = 'Disconnect';
-      break;
-    case 'connecting': {
-      btnText = connectionState;
-      break;
-    }
-    case 'failed': {
-      btnText = 'Reconnect';
-      break;
-    }
-  }
-
   const cardClassName = cn({
     'border-success': connectionState === 'connected',
     'border-error': connectionState === 'failed',
     'border-info': connectionState === 'connecting',
   });
 
-  const connectionStateClassName = cn('text-body', {
+  const connectionStateColorClassName = cn('text-info', {
     'text-success': connectionState === 'connected',
     'text-error': connectionState === 'failed',
-    'text-info': connectionState === 'connecting',
   });
+
+  const connectionStateClassName = cn('text-body mt-0.5', connectionStateColorClassName);
+
+  const connectionIconContainerClassName = cn(
+    'flex items-center gap-2 text-3xl',
+    connectionStateColorClassName,
+  );
 
   const displayText = connectionState
     ? (CONNECTION_STATE_TO_DISPLAY_TEXT[connectionState] ?? null)
     : null;
 
+  const renderConnectionStateIcon = () => {
+    switch (connectionState) {
+      case 'connected':
+        return <IoIosCheckmarkCircle />;
+      case 'connecting':
+        return <CgSpinner className="animate-spin" />;
+      case 'failed':
+        return <PiWarningCircleFill />;
+      default:
+        return <FaWifi />;
+    }
+  };
+
+  const handleCardClick = () => {
+    if (connectionState === 'connected') {
+      disconnect(id);
+    } else {
+      connect(id);
+    }
+  };
+
   return (
-    <Card className={cardClassName}>
+    <Card
+      role="button"
+      className={cardClassName}
+      onClick={pairable ? handleCardClick : undefined}
+      tabIndex={0}
+    >
       <div className="text-text-primary text-body-large flex items-center justify-between">
         <div className="flex flex-1 gap-4">
           <div className={iconContainerClassName}>
             <Icon className={iconClassName} />
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col">
             <span className="font-bold">{name}</span>
             <span className="text-text-tertiary text-body">
               {os} • {browser}
             </span>
-            <span className={connectionStateClassName}>{displayText}</span>
+            {pairable && (
+              <span className={connectionStateClassName}>{displayText ?? 'Tap to connect'}</span>
+            )}
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {!hideButton && (
-            <Button
-              className="flex items-center gap-2"
-              onClick={() => {
-                if (connectionState === 'connected') {
-                  disconnect(id);
-                } else {
-                  connect(id);
-                }
-              }}
-            >
-              {connectionState === 'connected' ? <GoUnlink /> : <FaWifi />}
-              <span className="hidden lg:block">{btnText}</span>
-            </Button>
-          )}
-        </div>
+        {pairable && (
+          <div className={connectionIconContainerClassName}>{renderConnectionStateIcon()}</div>
+        )}
       </div>
     </Card>
   );

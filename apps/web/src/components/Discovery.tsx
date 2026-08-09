@@ -12,7 +12,7 @@ export const Discovery: React.FC = () => {
     <div>
       <h1 className="text-h1 text-text-primary">Discover Devices</h1>
       <h3 className="text-h3 text-text-primary my-4">This device</h3>
-      <DeviceCard hideButton device={localPeer} />
+      <DeviceCard pairable={false} device={localPeer} />
       <h3 className="text-h3 text-text-primary mt-6 mb-4">Nearby devices ({peersCount})</h3>
       <div className="flex flex-col gap-2">
         {peersCount > 0 ? (
