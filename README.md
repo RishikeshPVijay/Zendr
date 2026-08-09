@@ -19,8 +19,8 @@ Self-hostable, privacy-focused, and requiring nothing more than a modern web bro
 ## Roadmap
 
 - [x] Device discovery
+- [x] WebRTC peer connections
 - [ ] Transfer requests
-- [ ] WebRTC peer connections
 - [ ] LAN peer-to-peer file transfers
 - [ ] Multi-file transfers
 - [ ] Live transfer progress

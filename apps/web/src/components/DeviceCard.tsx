@@ -49,7 +49,7 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({ device, pairable = true 
     },
   );
 
-  const cardClassName = cn({
+  const cardClassName = cn('cursor-pointer', {
     'border-success': connectionState === 'connected',
     'border-error': connectionState === 'failed',
     'border-info': connectionState === 'connecting',
