@@ -1,13 +1,17 @@
-import type { Peer } from '@zendr/protocol';
+import type { BaseMessage, Peer } from '@zendr/protocol';
 import { createContext, useContext, useEffect, useState } from 'react';
 
+type PeerId = Peer['id'];
+
 export type PeerConnectionContextValue = {
-  connect: (peerId: Peer['id']) => Promise<void>;
-  disconnect: (peerId: Peer['id']) => void;
+  connect: (peerId: PeerId) => Promise<void>;
+  disconnect: (peerId: PeerId) => void;
   onStateChange: (
-    peerId: string,
+    peerId: PeerId,
     listener: (state: RTCPeerConnectionState) => void,
   ) => VoidFunction;
+  sendMessage: (peerId: PeerId, message: BaseMessage) => void;
+  addMessageHandler: (listener: (peerId: PeerId, message: BaseMessage) => void) => VoidFunction;
 };
 
 export const PeerConnectionContext = createContext<PeerConnectionContextValue | null>(null);

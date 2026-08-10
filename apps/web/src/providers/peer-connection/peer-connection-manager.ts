@@ -15,6 +15,7 @@ export class PeerConnectionManager {
   private readonly connections = new Map<PeerId, PeerConnection>();
   private readonly send: SendFunction;
   private stateChangeListeners = new Map<PeerId, Set<(state: RTCPeerConnectionState) => void>>();
+  private messageListeners = new Set<(peerId: PeerId, message: BaseMessage) => void>();
 
   constructor(send: SendFunction) {
     this.send = send;
@@ -33,6 +34,10 @@ export class PeerConnectionManager {
     }
   }
 
+  private handleMessage(peerId: PeerId, message: BaseMessage) {
+    this.messageListeners.forEach((listener) => listener(peerId, message));
+  }
+
   private getOrCreate(peerId: PeerId): PeerConnection {
     let connection = this.connections.get(peerId);
 
@@ -41,6 +46,7 @@ export class PeerConnectionManager {
         peerId,
         this.send,
         this.handleOnStateChange.bind(this, peerId),
+        this.handleMessage.bind(this, peerId),
       );
       this.connections.set(peerId, connection);
     }
@@ -101,5 +107,23 @@ export class PeerConnectionManager {
         this.stateChangeListeners.delete(peerId);
       }
     };
+  }
+
+  onMessage(listener: (peerId: PeerId, message: BaseMessage) => void) {
+    this.messageListeners.add(listener);
+
+    return () => {
+      this.messageListeners.delete(listener);
+    };
+  }
+
+  sendMessage(peerId: PeerId, message: BaseMessage) {
+    const connection = this.connections.get(peerId);
+
+    if (!connection) {
+      throw new Error('Connection not found');
+    }
+
+    connection.sendMessage(message);
   }
 }

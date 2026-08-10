@@ -1,7 +1,8 @@
-import type { Candidate, ClientSignalingMessage, Peer } from '@zendr/protocol';
+import type { BaseMessage, Candidate, ClientSignalingMessage, Peer } from '@zendr/protocol';
 
 type SendFunction = (message: ClientSignalingMessage) => void;
 type StateChangeCallback = (state: RTCPeerConnectionState) => void;
+type MessageCallback = (message: BaseMessage) => void;
 
 export class PeerConnection {
   private readonly connection = new RTCPeerConnection({
@@ -14,10 +15,17 @@ export class PeerConnection {
   private dataChannel?: RTCDataChannel;
   private readonly peerId;
   private readonly send: SendFunction;
+  private messageCallback: MessageCallback;
 
-  constructor(peerId: Peer['id'], send: SendFunction, onStateChange: StateChangeCallback) {
+  constructor(
+    peerId: Peer['id'],
+    send: SendFunction,
+    onStateChange: StateChangeCallback,
+    onMessage: MessageCallback,
+  ) {
     this.peerId = peerId;
     this.send = send;
+    this.messageCallback = onMessage;
 
     this.connection.onconnectionstatechange = () => {
       onStateChange(this.connection.connectionState);
@@ -59,8 +67,15 @@ export class PeerConnection {
       console.log('Data channel open');
     };
 
-    this.dataChannel.onmessage = (event) => {
-      console.log(event.data);
+    this.dataChannel.onmessage = (e) => {
+      let message;
+      try {
+        message = JSON.parse(e.data);
+      } catch (err) {
+        throw new Error('Invalid JSON', { cause: err });
+      }
+
+      this.messageCallback(message);
     };
 
     this.dataChannel.onclose = () => {
@@ -119,5 +134,13 @@ export class PeerConnection {
 
     this.dataChannel?.close();
     this.connection.close();
+  }
+
+  sendMessage(message: BaseMessage) {
+    if (this.dataChannel?.readyState !== 'open') {
+      throw new Error('Data channel not open');
+    }
+
+    this.dataChannel.send(JSON.stringify(message));
   }
 }

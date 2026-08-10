@@ -1,4 +1,4 @@
-import type { Peer } from '@zendr/protocol';
+import type { BaseMessage, Peer } from '@zendr/protocol';
 import type React from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useWebSocket } from '../websocket';
@@ -7,15 +7,19 @@ import { PeerConnectionManager } from './peer-connection-manager';
 import { SignalingHandler } from './signaling-handler';
 
 export const PeerConnectionProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { send, addMessageHandler } = useWebSocket();
+  const { send, addMessageHandler: addWsMessageHandler } = useWebSocket();
   const manager = useMemo(() => new PeerConnectionManager(send), [send]);
   const handler = useMemo(() => new SignalingHandler(manager), [manager]);
   const connect = useCallback((peerId: Peer['id']) => manager.connect(peerId), [manager]);
   const disconnect = useCallback((peerId: Peer['id']) => manager.disconnect(peerId), [manager]);
+  const sendMessage = useCallback(
+    (peerId: Peer['id'], message: BaseMessage) => manager.sendMessage(peerId, message),
+    [manager],
+  );
 
   useEffect(() => {
-    return addMessageHandler((message) => handler.handle(message));
-  }, [addMessageHandler, handler]);
+    return addWsMessageHandler((message) => handler.handle(message));
+  }, [addWsMessageHandler, handler]);
 
   return (
     <PeerConnectionContext
@@ -25,6 +29,8 @@ export const PeerConnectionProvider: React.FC<React.PropsWithChildren> = ({ chil
         onStateChange(peerId, listener) {
           return manager.onStateChange(peerId, listener);
         },
+        sendMessage,
+        addMessageHandler: manager.onMessage.bind(manager),
       }}
     >
       {children}
