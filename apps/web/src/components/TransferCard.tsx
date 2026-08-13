@@ -34,7 +34,7 @@ export const TransferCard: React.FC<TransferCardProps> = ({ transfer }) => {
         return 'Accepted';
       case 'rejected':
         return 'Rejected';
-      case 'peer-disconnected':
+      case 'disconnected':
         return 'Peer disconnected';
     }
   }, [transfer]);
