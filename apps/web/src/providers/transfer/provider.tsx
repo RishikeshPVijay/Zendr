@@ -2,13 +2,16 @@ import type { Peer } from '@zendr/protocol';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 import { usePeerConnection } from '../peer-connection/context';
-import { TransferContext } from './context';
+import { TransferContext, type Transfer } from './context';
 import { TransferHandler } from './transfer-handler';
 import { TransferManager } from './transfer-manager';
 
 export const TransferProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { sendMessage, addMessageHandler } = usePeerConnection();
-  const manager = useMemo(() => new TransferManager(sendMessage), [sendMessage]);
+  const { sendMessage, addMessageHandler, onStateChange } = usePeerConnection();
+  const manager = useMemo(
+    () => new TransferManager(sendMessage, onStateChange),
+    [sendMessage, onStateChange],
+  );
   const handler = useMemo(() => new TransferHandler(manager), [manager]);
   const transfers = useSyncExternalStore(
     manager.subscribeToTransfers,
@@ -28,10 +31,23 @@ export const TransferProvider: React.FC<React.PropsWithChildren> = ({ children }
     },
     [manager],
   );
+  const acceptTransfer = useCallback((id: Transfer['id']) => manager.acceptTransfer(id), [manager]);
+  const rejectTransfer = useCallback((id: Transfer['id']) => manager.rejectTransfer(id), [manager]);
 
   useEffect(() => {
     return addMessageHandler((peerId, message) => handler.handle(peerId, message));
   }, [addMessageHandler, handler]);
 
-  return <TransferContext value={{ transfers, sendRequest }}>{children}</TransferContext>;
+  return (
+    <TransferContext
+      value={{
+        transfers,
+        sendRequest,
+        acceptTransfer,
+        rejectTransfer,
+      }}
+    >
+      {children}
+    </TransferContext>
+  );
 };

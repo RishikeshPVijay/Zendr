@@ -13,8 +13,6 @@
 :root {
   /* Brand */
   --primary: #6858f6;
-  --primary-hover: #7c6cff;
-  --primary-active: #4a35e0;
   --secondary: #f3f4f6;
 
   /* Layouts */
@@ -25,7 +23,6 @@
   --surface-primary: #ffffff;
   --surface-secondary: #f5f7fb;
   --surface-tertiary: #eef2f8;
-  --surface-hover: #f3f5fb;
 
   /* Text */
   --text-primary: #111827;
@@ -53,6 +50,14 @@
 
   /* Focus & Effects */
   --focus-ring: #a78bfa;
+  --focus-ring-secondary: #2c486a;
+
+  --action-primary: #6858f6;
+  --action-primary-hover: #7c6cff;
+  --action-primary-active: #4a35e0;
+  --action-secondary: #1b2435;
+  --action-secondary-hover: #263246;
+  --action-secondary-active: #121222;
 }
 
 [data-theme='dark'] {
@@ -70,7 +75,6 @@
   --surface-primary: #1f2937;
   --surface-secondary: #171f2e;
   --surface-tertiary: #111827;
-  --surface-hover: #263246;
 
   /* Text */
   --text-primary: #f3f4f6;
@@ -98,13 +102,19 @@
 
   /* Focus & Effects */
   --focus-ring: #9d8cff;
+  --focus-ring-secondary: #2c486a;
+
+  --action-primary: #6858f6;
+  --action-primary-hover: #7c6cff;
+  --action-primary-active: #4a35e0;
+  --action-secondary: #1b2435;
+  --action-secondary-hover: #263246;
+  --action-secondary-active: #121222;
 }
 
 @theme {
   /* Brand */
   --color-primary: var(--primary);
-  --color-primary-hover: var(--primary-hover);
-  --color-primary-active: var(--primary-active);
   --color-secondary: var(--secondary);
 
   /* Text */
@@ -122,7 +132,6 @@
   --color-surface-primary: var(--surface-primary);
   --color-surface-secondary: var(--surface-secondary);
   --color-surface-tertiary: var(--surface-tertiary);
-  --color-surface-hover: var(--surface-hover);
 
   /* Borders */
   --color-border: var(--border);
@@ -143,6 +152,15 @@
 
   /*color- Focus & Effects */
   --color-focus-ring: var(--focus-ring);
+  --color-focus-ring-secondary: var(--focus-ring-secondary);
+
+  --color-action-primary: var(--action-primary);
+  --color-action-primary-hover: var(--action-primary-hover);
+  --color-action-primary-active: var(--action-primary-active);
+  --color-action-secondary: var(--action-secondary);
+  --color-action-secondary-hover: var(--action-secondary-hover);
+  --color-action-secondary-active: var(--action-secondary-active);
+
   --shadow-header: 0 2px 2px -1px var(--border-hover);
 
   /* Typography */
@@ -163,6 +181,10 @@
   --text-action: 16px;
   --text-action--line-height: 24px;
   --text-action--font-weight: 600;
+
+  --text-action-sm: 14px;
+  --text-action-sm--line-height: 20px;
+  --text-action-sm--font-weight: 600;
 
   --text-body-large: 16px;
   --text-body-large--line-height: 24px;

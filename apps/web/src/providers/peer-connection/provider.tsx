@@ -16,6 +16,15 @@ export const PeerConnectionProvider: React.FC<React.PropsWithChildren> = ({ chil
     (peerId: Peer['id'], message: BaseMessage) => manager.sendMessage(peerId, message),
     [manager],
   );
+  const onStateChange = useCallback(
+    (peerId: Peer['id'], listener: (state: RTCPeerConnectionState) => void) =>
+      manager.onStateChange(peerId, listener),
+    [manager],
+  );
+  const addMessageHandler = useCallback(
+    (listener: (peerId: Peer['id'], message: BaseMessage) => void) => manager.onMessage(listener),
+    [manager],
+  );
 
   useEffect(() => {
     return addWsMessageHandler((message) => handler.handle(message));
@@ -26,11 +35,9 @@ export const PeerConnectionProvider: React.FC<React.PropsWithChildren> = ({ chil
       value={{
         connect,
         disconnect,
-        onStateChange(peerId, listener) {
-          return manager.onStateChange(peerId, listener);
-        },
+        onStateChange,
         sendMessage,
-        addMessageHandler: manager.onMessage.bind(manager),
+        addMessageHandler,
       }}
     >
       {children}

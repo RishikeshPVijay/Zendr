@@ -18,16 +18,19 @@ export function App() {
         <DiscoveryProvider>
           <PeerConnectionProvider>
             <TransferProvider>
-              <div className="relative flex h-full flex-col">
+              <div className="flex h-full min-h-0 flex-col">
                 <Header />
-                <SectionWrapper sectionClassName="flex flex-1" className="flex flex-1 gap-10 p-5">
-                  <div className="flex-1">
+                <SectionWrapper
+                  sectionClassName="flex flex-1 min-h-0"
+                  className="flex min-h-0 flex-1 gap-10 p-5"
+                >
+                  <div className="min-h-0 flex-1">
                     <Discovery />
                   </div>
                   {minMd && (
                     <>
                       <div className="bg-border-hover w-px" />
-                      <div className="flex-1">
+                      <div className="min-h-0 flex-1">
                         <Transfers />
                       </div>
                     </>

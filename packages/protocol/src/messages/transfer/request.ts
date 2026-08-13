@@ -4,8 +4,9 @@ import { FileMetadataSchema } from './file-metadata.js';
 
 export const TransferRequestMessageSchema = BaseMessageSchema.extend({
   type: z.literal('transfer:request'),
-  requestId: z.uuid(),
-  files: z.array(FileMetadataSchema),
+  id: z.uuid(),
+  files: z.array(FileMetadataSchema).min(1),
+  createdAt: z.number().int().nonnegative(),
 });
 
 export type TransferRequestMessage = z.infer<typeof TransferRequestMessageSchema>;

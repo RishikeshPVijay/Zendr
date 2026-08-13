@@ -22,11 +22,11 @@ export class TransferHandler {
           break;
         }
         case 'transfer:accept': {
-          this.manager.handleAccept(data.requestId);
+          this.manager.handleAccept(peerId, data.id);
           break;
         }
         case 'transfer:reject': {
-          this.manager.handleReject(data.requestId);
+          this.manager.handleReject(peerId, data.id);
           break;
         }
       }

@@ -11,22 +11,79 @@ import type { Transfer } from './context';
 
 type PeerId = Peer['id'];
 type SendMessageFunction = (peerId: PeerId, message: BaseMessage) => void;
+type PeerStateChangeListener = (
+  peerId: PeerId,
+  listener: (state: RTCPeerConnectionState) => void,
+) => VoidFunction;
 
-type RequestId = Transfer['requestId'];
+type TransferId = Transfer['id'];
 
 export class TransferManager {
-  private transfers = new Map<RequestId, Transfer>();
+  private transfers = new Map<TransferId, Transfer>();
   private sendMessage: SendMessageFunction;
+  private onPeerStateChange: PeerStateChangeListener;
   private requestListeners = new Set<VoidFunction>();
+  private peerStateUnsubscribers = new Map<PeerId, VoidFunction>();
   private transfersSnapshot: Transfer[] = [];
 
-  constructor(sendMessage: SendMessageFunction) {
+  constructor(sendMessage: SendMessageFunction, onPeerStateChange: PeerStateChangeListener) {
     this.sendMessage = sendMessage;
+    this.onPeerStateChange = onPeerStateChange;
   }
 
   private notifyListeners() {
     this.transfersSnapshot = Array.from(this.transfers.values());
     this.requestListeners.forEach((listener) => listener());
+  }
+
+  private ensurePeerStateListener(peerId: PeerId) {
+    if (this.peerStateUnsubscribers.has(peerId)) {
+      return;
+    }
+
+    const unsubscribe = this.onPeerStateChange(peerId, (state) => {
+      switch (state) {
+        case 'closed':
+        case 'failed':
+        case 'disconnected':
+          this.handlePeerDisconnect(peerId);
+      }
+    });
+
+    this.peerStateUnsubscribers.set(peerId, unsubscribe);
+  }
+
+  private removePeerStateListenerIfUnused(peerId: PeerId) {
+    for (const transfer of this.transfers.values()) {
+      if (transfer.peerId === peerId) {
+        return;
+      }
+    }
+
+    this.peerStateUnsubscribers.get(peerId)?.();
+    this.peerStateUnsubscribers.delete(peerId);
+  }
+
+  private handlePeerDisconnect(peerId: PeerId) {
+    let changed = false;
+
+    for (const [id, transfer] of this.transfers) {
+      if (
+        transfer.peerId !== peerId ||
+        (transfer.state !== 'pending' && transfer.state !== 'accepted')
+      ) {
+        continue;
+      }
+
+      this.transfers.set(id, { ...transfer, state: 'disconnected' });
+      changed = true;
+    }
+
+    if (changed) {
+      this.notifyListeners();
+    }
+
+    this.removePeerStateListenerIfUnused(peerId);
   }
 
   subscribeToTransfers = (listener: VoidFunction) => {
@@ -42,8 +99,10 @@ export class TransferManager {
   };
 
   sendRequest(peerId: PeerId, files: FileMetadata[]) {
+    this.ensurePeerStateListener(peerId);
+
     const transferRequest: Transfer = {
-      requestId: uuidv4(),
+      id: uuidv4(),
       direction: 'outgoing',
       state: 'pending',
       peerId,
@@ -51,76 +110,102 @@ export class TransferManager {
       createdAt: Date.now(),
     };
 
-    this.transfers.set(transferRequest.requestId, transferRequest);
+    this.transfers.set(transferRequest.id, transferRequest);
     this.notifyListeners();
 
     const message: TransferRequestMessage = {
       type: 'transfer:request',
+      id: transferRequest.id,
       files: transferRequest.files,
-      requestId: transferRequest.requestId,
+      createdAt: transferRequest.createdAt,
     };
 
     this.sendMessage(peerId, message);
   }
 
   handleIncomingRequest(peerId: PeerId, data: TransferRequestMessage) {
-    const { requestId } = data;
+    this.ensurePeerStateListener(peerId);
 
-    this.transfers.set(requestId, {
-      requestId,
+    const { id } = data;
+
+    this.transfers.set(id, {
+      id,
       direction: 'incoming',
       state: 'pending',
       files: data.files,
       peerId,
-      createdAt: Date.now(),
+      createdAt: data.createdAt,
     });
     this.notifyListeners();
+  }
 
-    const isAccepted = confirm('Accept?');
-    const transfer = this.transfers.get(data.requestId)!;
+  acceptTransfer(id: TransferId) {
+    const transfer = this.transfers.get(id);
 
-    if (isAccepted) {
-      this.transfers.set(requestId, { ...transfer, state: 'accepted' });
-
-      const message: TransferAcceptMessage = {
-        type: 'transfer:accept',
-        requestId,
-      };
-
-      this.sendMessage(peerId, message);
-    } else {
-      this.transfers.set(requestId, { ...transfer, state: 'rejected' });
-
-      const message: TransferRejectMessage = {
-        type: 'transfer:reject',
-        requestId,
-      };
-
-      this.sendMessage(peerId, message);
+    if (!transfer || transfer.state !== 'pending' || transfer.direction !== 'incoming') {
+      return;
     }
 
+    const message: TransferAcceptMessage = {
+      type: 'transfer:accept',
+      id,
+    };
+
+    this.transfers.set(id, { ...transfer, state: 'accepted' });
+    this.notifyListeners();
+    this.sendMessage(transfer.peerId, message);
+  }
+
+  rejectTransfer(id: TransferId) {
+    const transfer = this.transfers.get(id);
+
+    if (!transfer || transfer.state !== 'pending' || transfer.direction !== 'incoming') {
+      return;
+    }
+
+    const message: TransferRejectMessage = {
+      type: 'transfer:reject',
+      id,
+    };
+
+    this.transfers.set(id, { ...transfer, state: 'rejected' });
+    this.notifyListeners();
+    this.sendMessage(transfer.peerId, message);
+
+    this.removePeerStateListenerIfUnused(transfer.peerId);
+  }
+
+  handleAccept(peerId: PeerId, id: TransferId) {
+    const transfer = this.transfers.get(id);
+
+    if (
+      !transfer ||
+      transfer.direction !== 'outgoing' ||
+      transfer.state !== 'pending' ||
+      transfer.peerId !== peerId
+    ) {
+      return;
+    }
+
+    this.transfers.set(id, { ...transfer, state: 'accepted' });
     this.notifyListeners();
   }
 
-  handleAccept(requestId: RequestId) {
-    const transfer = this.transfers.get(requestId);
+  handleReject(peerId: PeerId, id: TransferId) {
+    const transfer = this.transfers.get(id);
 
-    if (!transfer) {
-      throw new Error('Tranfer not found');
+    if (
+      !transfer ||
+      transfer.direction !== 'outgoing' ||
+      transfer.state !== 'pending' ||
+      transfer.peerId !== peerId
+    ) {
+      return;
     }
 
-    this.transfers.set(requestId, { ...transfer, state: 'accepted' });
+    this.transfers.set(id, { ...transfer, state: 'rejected' });
     this.notifyListeners();
-  }
 
-  handleReject(requestId: RequestId) {
-    const transfer = this.transfers.get(requestId);
-
-    if (!transfer) {
-      throw new Error('Tranfer not found');
-    }
-
-    this.transfers.set(requestId, { ...transfer, state: 'rejected' });
-    this.notifyListeners();
+    this.removePeerStateListenerIfUnused(peerId);
   }
 }
