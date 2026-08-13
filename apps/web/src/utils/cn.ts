@@ -8,6 +8,7 @@ const twMerge = extendTailwindMerge({
         'text-h1',
         'text-h2',
         'text-action',
+        'text-action-sm',
         'text-body-large',
         'text-body',
         'text-body-small',

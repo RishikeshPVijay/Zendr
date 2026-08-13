@@ -1,4 +1,5 @@
 import type { Peer } from '@zendr/protocol';
+import { useRef, type ChangeEventHandler } from 'react';
 import type { IconType } from 'react-icons';
 import { CgSpinner } from 'react-icons/cg';
 import { FaDesktop, FaMobileAlt, FaTabletAlt, FaWifi } from 'react-icons/fa';
@@ -6,6 +7,7 @@ import { IoIosCheckmarkCircle } from 'react-icons/io';
 import { LuTv } from 'react-icons/lu';
 import { PiWarningCircleFill } from 'react-icons/pi';
 import { usePeerConnection, usePeerConnectionState } from '../providers/peer-connection/context';
+import { useTransfer } from '../providers/transfer/context';
 import { cn } from '../utils';
 import { Card } from './Card';
 
@@ -23,14 +25,16 @@ const deviceIconMap: Record<Peer['deviceType'], IconType> = {
 
 const CONNECTION_STATE_TO_DISPLAY_TEXT: Partial<Record<RTCPeerConnectionState, string>> = {
   connecting: 'Connecting...',
-  connected: 'Connected',
+  connected: 'Tap to send files',
   failed: 'Failed to connect',
 };
 
 export const DeviceCard: React.FC<DeviceCardProps> = ({ device, pairable = true }) => {
-  const { connect, disconnect } = usePeerConnection();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { connect } = usePeerConnection();
   const { name, deviceType, browser, os, id } = device;
   const connectionState = usePeerConnectionState(id);
+  const { sendRequest } = useTransfer();
 
   const Icon = deviceIconMap[deviceType];
   const iconClassName = cn('flex-1', {
@@ -71,6 +75,24 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({ device, pairable = true 
     ? (CONNECTION_STATE_TO_DISPLAY_TEXT[connectionState] ?? null)
     : null;
 
+  const handleCardClick = () => {
+    if (connectionState === 'connected') {
+      inputRef.current?.click();
+    } else {
+      connect(id);
+    }
+  };
+
+  const handleInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const { files } = e.target;
+
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    sendRequest(id, files);
+  };
+
   const renderConnectionStateIcon = () => {
     switch (connectionState) {
       case 'connected':
@@ -84,40 +106,47 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({ device, pairable = true 
     }
   };
 
-  const handleCardClick = () => {
-    if (connectionState === 'connected') {
-      disconnect(id);
-    } else {
-      connect(id);
-    }
-  };
-
   return (
-    <Card
-      role="button"
-      className={cardClassName}
-      onClick={pairable ? handleCardClick : undefined}
-      tabIndex={0}
-    >
-      <div className="text-text-primary text-body-large flex items-center justify-between">
-        <div className="flex flex-1 gap-4">
-          <div className={iconContainerClassName}>
-            <Icon className={iconClassName} />
+    <>
+      <Card
+        role="button"
+        className={cardClassName}
+        onClick={pairable ? handleCardClick : undefined}
+        tabIndex={0}
+      >
+        <div className="text-text-primary text-body-large flex items-center justify-between">
+          <div className="flex flex-1 gap-4">
+            <div className={iconContainerClassName}>
+              <Icon className={iconClassName} />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold">{name}</span>
+              <span className="text-text-tertiary text-body">
+                {os} • {browser}
+              </span>
+              {pairable && (
+                <span className={connectionStateClassName}>{displayText ?? 'Tap to connect'}</span>
+              )}
+            </div>
           </div>
-          <div className="flex flex-col">
-            <span className="font-bold">{name}</span>
-            <span className="text-text-tertiary text-body">
-              {os} • {browser}
-            </span>
-            {pairable && (
-              <span className={connectionStateClassName}>{displayText ?? 'Tap to connect'}</span>
-            )}
-          </div>
+          {pairable && (
+            <div className={connectionIconContainerClassName}>{renderConnectionStateIcon()}</div>
+          )}
         </div>
-        {pairable && (
-          <div className={connectionIconContainerClassName}>{renderConnectionStateIcon()}</div>
-        )}
-      </div>
-    </Card>
+      </Card>
+
+      {connectionState === 'connected' && (
+        <form>
+          <input
+            ref={inputRef}
+            hidden
+            type="file"
+            multiple
+            name="files[]"
+            onChange={handleInputChange}
+          />
+        </form>
+      )}
+    </>
   );
 };
