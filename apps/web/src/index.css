@@ -35,6 +35,9 @@
   --border: #e5e7eb;
   --border-hover: #d1d5db;
   --divider: #f1f5f9;
+  --scrollbar-track: rgb(245 247 251 / 0.45);
+  --scrollbar-thumb: rgb(107 114 128 / 0.38);
+  --scrollbar-thumb-hover: rgb(75 85 99 / 0.55);
 
   /* Status */
   --success: #22c55e;
@@ -87,6 +90,9 @@
   --border: #2b3345;
   --border-hover: #374151;
   --divider: #1a1f2e;
+  --scrollbar-track: rgb(23 31 46 / 0.55);
+  --scrollbar-thumb: rgb(156 163 175 / 0.32);
+  --scrollbar-thumb-hover: rgb(209 213 219 / 0.48);
 
   /* Status */
   --success: #22c55e;
@@ -162,6 +168,7 @@
   --color-action-secondary-active: var(--action-secondary-active);
 
   --shadow-header: 0 2px 2px -1px var(--border-hover);
+  --shadow-bottom-nav-bar: 0 -2px 2px -1px var(--border-hover);
 
   /* Typography */
   --font-inter: 'Inter', sans-serif;
@@ -213,4 +220,31 @@ body,
 body {
   background-color: var(--background);
   font-family: var(--font-inter);
+}
+
+.app-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+.app-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.app-scrollbar::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 999px;
+}
+
+.app-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+
+.app-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }

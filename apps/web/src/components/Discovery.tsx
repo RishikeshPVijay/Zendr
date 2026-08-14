@@ -9,29 +9,31 @@ export const Discovery: React.FC = () => {
   const peersCount = peers.length;
 
   return (
-    <div>
+    <div className="flex h-full min-h-0 flex-col">
       <h1 className="text-h1 text-text-primary">Discover Devices</h1>
-      <h3 className="text-h3 text-text-primary my-4">This device</h3>
-      <DeviceCard pairable={false} device={localPeer} />
-      <h3 className="text-h3 text-text-primary mt-6 mb-4">Nearby devices ({peersCount})</h3>
-      <div className="flex flex-col gap-2">
-        {peersCount > 0 ? (
-          peers.map((peer) => <DeviceCard key={peer.id} device={peer} />)
-        ) : (
-          <Card>
-            <div className="flex flex-col items-center py-10 text-center">
-              <IoSearchCircleOutline className="text-text-tertiary mb-4 h-10 w-10" />
+      <div className="app-scrollbar flex-1 overflow-y-auto pr-2">
+        <h3 className="text-h3 text-text-primary my-4">This device</h3>
+        <DeviceCard pairable={false} device={localPeer} />
+        <h3 className="text-h3 text-text-primary mt-6 mb-4">Nearby devices ({peersCount})</h3>
+        <div className="flex flex-col gap-2">
+          {peersCount > 0 ? (
+            peers.map((peer) => <DeviceCard key={peer.id} device={peer} />)
+          ) : (
+            <Card>
+              <div className="flex flex-col items-center py-10 text-center">
+                <IoSearchCircleOutline className="text-text-tertiary mb-4 h-10 w-10" />
 
-              <h4 className="text-text-primary text-body-large font-semibold">
-                Looking for nearby devices…
-              </h4>
+                <h4 className="text-text-primary text-body-large font-semibold">
+                  Looking for nearby devices…
+                </h4>
 
-              <p className="text-text-secondary text-body mt-2 max-w-sm">
-                Devices on the same network will appear here automatically.
-              </p>
-            </div>
-          </Card>
-        )}
+                <p className="text-text-secondary text-body mt-2 max-w-sm">
+                  Devices on the same network will appear here automatically.
+                </p>
+              </div>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );
