@@ -20,7 +20,7 @@ Self-hostable, privacy-focused, and requiring nothing more than a modern web bro
 
 - [x] Device discovery
 - [x] WebRTC peer connections
-- [ ] Transfer requests
+- [x] Transfer requests
 - [ ] LAN peer-to-peer file transfers
 - [ ] Multi-file transfers
 - [ ] Live transfer progress
