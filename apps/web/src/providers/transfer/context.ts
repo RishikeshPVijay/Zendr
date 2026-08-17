@@ -1,13 +1,23 @@
 import type { FileMetadata, Peer } from '@zendr/protocol';
 import { createContext, useContext } from 'react';
 
+export type TransferState =
+  | 'pending'
+  | 'accepted'
+  | 'rejected'
+  | 'disconnected'
+  | 'transferring'
+  | 'completed'
+  | 'failed';
+
 export type Transfer = {
   id: string;
   direction: 'incoming' | 'outgoing';
   peerId: string;
   files: FileMetadata[];
-  state: 'pending' | 'accepted' | 'rejected' | 'disconnected';
+  state: TransferState;
   createdAt: number;
+  progress: number;
 };
 
 export type TransferContextValue = {
